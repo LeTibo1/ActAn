@@ -1,7 +1,7 @@
 import argparse
 
 def parse_args():
-    parser = argparse.ArgutmentParser()
-    parser.add("--")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--test")
 
     return parser.parse_args()
