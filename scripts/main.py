@@ -7,13 +7,13 @@ def main():
     args = ps.parse_args()
     
     # 1. extraction
+    file = "oxydase3.csv"
     if file:
-        file = "oxydase3.csv"
         dts, data = de.run_extraction(file)
 
     # 2. pick area
     if data:
-        area = ap.run_area_pick(data)
+        data_area = ap.run_area_pick(dts, data)
 
 
 if __name__ == "__main__":
