@@ -2,6 +2,7 @@ import sys
 import parser as ps
 import data_extractor as de
 import area_picker as ap
+import calculator as ca
 
 def main():
     args = ps.parse_args()
@@ -14,6 +15,10 @@ def main():
     # 2. pick area
     if data:
         data_area = ap.run_area_pick(dts, data)
+
+    # 3. calculate V from area
+    if data_area:
+        v = ca.run_calculation(data_area)
 
 
 if __name__ == "__main__":
