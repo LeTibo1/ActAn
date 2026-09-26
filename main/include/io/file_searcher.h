@@ -1,4 +1,7 @@
-#ifndef MENU_H
-#define MENU_H
+#pragma once
+#include <string>
+#include <vector>
 
-#endif
+using FileList = std::vector<std::string>;
+
+FileList findCsvFiles(const std::string& start_path);
