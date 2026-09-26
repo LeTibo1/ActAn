@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
@@ -31,8 +32,13 @@ def generate_plot(file, data, data_area):
         equation,
         fontsize=fsize,
     )
-    file = file[:-4]
-    plt.savefig(f"plots/{file}.png")
+
+    # save plot in plots
+    path_to_plots = os.path.dirname(file) + "/plots"
+    filename = os.path.basename(file)
+    os.makedirs(path_to_plots, exist_ok=True)
+    plt.title(os.path.splitext(filename)[0], fontsize=20)
+    plt.savefig(f"{path_to_plots}/{filename}.png")
 
     return res.slope
 

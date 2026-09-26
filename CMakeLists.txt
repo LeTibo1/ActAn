@@ -12,3 +12,5 @@ file(GLOB SOURCES "main/src/*.cpp")
 
 # create executable
 add_executable(actan ${SOURCES})
+
+install(TARGETS actan DESTINATION /usr/local/bin)
