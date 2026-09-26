@@ -1,5 +1,7 @@
 build/
 bin/
 scripts/plots/
+
+*.swp
 *.csv
 *.xlsx

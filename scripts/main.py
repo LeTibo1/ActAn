@@ -7,9 +7,10 @@ import plot_generator as pg
 
 def main():
     args = ps.parse_args()
+    file = args.file
+    print(file)
     
     # 1. extraction
-    file = "activitétotale3.csv"
     if file:
         dts, data = de.run_extraction(file)
 
