@@ -1,6 +1,48 @@
-def search_algo(t, data):
-    i = None
-    return i
+import numpy as np
+from scipy import stats
+
+def search_algo(data, area_no):
+    start = None
+    thresh = 0.05
+    counter = 1
+    i = 0
+    is_reset = False
+    found = False
+
+    x = np.array(list(data.keys()))
+    y = np.array(list(data.values()))
+
+    for j in range(2, len(x)):
+        if j - i < 2:
+            continue
+
+        if not is_reset:
+            res = stats.linregress(x[i:j], y[i:j])
+            dif = np.abs(y[j+1] - (res.intercept + res.slope * x[j+1]))
+            if dif > thresh:
+                print(f"j: {j}, value: {y[j]}")
+                is_reset = True
+                continue
+        elif not found:
+            dif = y[j+1] - y[j]
+            if dif > thresh:
+                print(f"found: {y[j]}")
+                found = True
+        else:
+            dif = y[j+1] - y[j]
+            if dif < 0:
+                is_reset = False
+                found = False
+                counter += 1
+                print(j, y[j])
+                i = j
+
+                if counter == area_no:
+                    start = j
+                    break
+
+    print("start found at:", start)
+    return start
 
 def run_area_pick(dts, data):
     # temporary manual setting of parameters
@@ -10,11 +52,7 @@ def run_area_pick(dts, data):
 
     no_scans = int(TFRAME_RUN / dts)
 
-    # start of area is at about
-    t = (AREA_NO - 1) * TFRAME_PRE / dts
-
-    i = search_algo(t, data)
-    i = 240
+    i = search_algo(data, AREA_NO)
     if not i:
         raise Exception("Failed to find the starting point of the time frame")
     j = i + no_scans
