@@ -1,6 +1,6 @@
 def read_file(file):
     raw = []
-    with open(file, "r") as f:
+    with open(file, "r", encoding='latin-1') as f:
         for line in f:
             raw.append(line)
 
