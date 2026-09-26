@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-mkdir build
+mkdir -p build
 cd build
 
 # compile
@@ -11,4 +11,4 @@ cmake --build .
 cd ..
 
 # run program
-./build/ActAn
+./build/actan
