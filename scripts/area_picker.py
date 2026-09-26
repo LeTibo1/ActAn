@@ -22,8 +22,6 @@ def search_algo(data, area_no):
             res = stats.linregress(x[i:j], y[i:j])
             dif = np.abs(y[j+1] - (res.intercept + res.slope * x[j+1]))
             if dif > thresh:
-                print(f"j: {j}, value: {y[j]}")
-                print("projection: ", res.intercept + res.slope * x[j+1])
                 is_reset = True
                 continue
 
@@ -31,17 +29,15 @@ def search_algo(data, area_no):
         elif not found:
             dif = y[j+1] - y[j]
             if dif > thresh:
-                print(f"found: {y[j]}")
                 found = True
 
         # find the highest point which will be the new starting point
         else:
             dif = y[j+1] - y[j]
-            if dif < 0:
+            if dif < 0.001:
                 is_reset = False
                 found = False
                 counter += 1
-                print(j, y[j])
                 i = j
 
                 if counter == area_no:
