@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
-def generate_plot(data, data_area):
+def generate_plot(file, data, data_area):
     fsize = 14
 
     x = np.array(list(data.keys()))
@@ -31,15 +31,16 @@ def generate_plot(data, data_area):
         equation,
         fontsize=fsize,
     )
-    #plt.savefig()
+    file = file[:-4]
+    plt.savefig(f"plots/{file}.png")
 
     return res.slope
 
-def run_plot_generation(data, data_area):
+def run_plot_generation(file, data, data_area):
     EPSILON = 6220 * 10**(-6)
     VOL_CUVETTE = 1.2
 
-    slope = generate_plot(data, data_area)
+    slope = generate_plot(file, data, data_area)
     v = round(np.abs(slope / EPSILON * VOL_CUVETTE), 4)
 
     return v

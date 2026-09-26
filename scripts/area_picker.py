@@ -16,18 +16,25 @@ def search_algo(data, area_no):
         if j - i < 2:
             continue
 
+        # checks if j+1 is still following the linear trend
         if not is_reset:
+            ### might want to change to polynomial regression
             res = stats.linregress(x[i:j], y[i:j])
             dif = np.abs(y[j+1] - (res.intercept + res.slope * x[j+1]))
             if dif > thresh:
                 print(f"j: {j}, value: {y[j]}")
+                print("projection: ", res.intercept + res.slope * x[j+1])
                 is_reset = True
                 continue
+
+        # if not, then find the next large increase in abs
         elif not found:
             dif = y[j+1] - y[j]
             if dif > thresh:
                 print(f"found: {y[j]}")
                 found = True
+
+        # find the highest point which will be the new starting point
         else:
             dif = y[j+1] - y[j]
             if dif < 0:

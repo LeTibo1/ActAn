@@ -2,14 +2,13 @@ import sys
 import parser as ps
 import data_extractor as de
 import area_picker as ap
-import calculator as ca
 import plot_generator as pg
 
 def main():
     args = ps.parse_args()
     
     # 1. extraction
-    file = "oxydase3.csv"
+    file = "oxydase2.csv"
     if file:
         dts, data = de.run_extraction(file)
 
@@ -19,7 +18,7 @@ def main():
 
     # 3. Plot both plots and calculate velocity
     if data_area:
-        v = pg.run_plot_generation(data, data_area)
+        v = pg.run_plot_generation(file, data, data_area)
 
 if __name__ == "__main__":
     try:
