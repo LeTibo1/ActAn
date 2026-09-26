@@ -1,3 +1,5 @@
 build/
 bin/
-scripts/oxydase3.csv
+scripts/plots/
+*.csv
+*.xlsx
