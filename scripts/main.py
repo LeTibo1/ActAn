@@ -3,6 +3,7 @@ import parser as ps
 import data_extractor as de
 import area_picker as ap
 import calculator as ca
+import plot_generator as pg
 
 def main():
     args = ps.parse_args()
@@ -16,10 +17,9 @@ def main():
     if data:
         data_area = ap.run_area_pick(dts, data)
 
-    # 3. calculate V from area
+    # 3. Plot both plots and calculate velocity
     if data_area:
-        v = ca.run_calculation(data_area)
-
+        v = pg.run_plot_generation(data, data_area)
 
 if __name__ == "__main__":
     try:
