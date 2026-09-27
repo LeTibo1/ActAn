@@ -2,6 +2,7 @@ build/
 bin/
 scripts/plots/
 
+todo.txt
 *.swp
 *.csv
 *.xlsx

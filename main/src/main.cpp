@@ -1,20 +1,22 @@
 #include "file_handler.h"
 #include "file_searcher.h"
+#include "dispatcher.h"
 #include <iostream>
 #include <cstdlib>
 
 namespace fs = std::filesystem;
 
 int main(int argc, char* argv[]) {
-	fs::path exe_path = fs::absolute(argv[0]);
+	auto exe_path = fs::absolute(argv[0]);
 	auto main = exe_path.parent_path().parent_path().string() + "/scripts/main.py";
+	auto current_path = fs::current_path().string();
 
-	std::string current_path;
-	if (argc > 1) {
-		current_path = argv[1];
-	} else {
-		current_path = fs::current_path().string();
+	std::vector<std::string> args;
+	for (auto i = 1; i < argc; i++) {
+		args.push_back(argv[i]);
 	}
+
+	dispatch(args);
 
 	FileList csvFiles = findCsvFiles(current_path);
 

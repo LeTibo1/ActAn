@@ -14,7 +14,7 @@ cmake --build .
 # Da /usr/local/bin geschützt ist, wird nach deinem Mac-Passwort gefragt.
 #sudo cmake --install .
 
-cd ..
+cd "$cur_dir"
 #echo "Installation successful!"
 
-build/actan "$cur_dir"
+/Users/thibautgoritz/Documents/Wichtig/Uni/Master_Forschis/Toullec/coding/ActAn/build/actan $@
