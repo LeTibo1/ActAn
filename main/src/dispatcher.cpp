@@ -8,8 +8,8 @@
 ParseAction dispatch(const StringList& args) {
 	// map of all available flags
 	std::unordered_map<std::string, std::function<ParseAction(const StringList&, size_t&)>> actions = {
-		{"--help", [](const StringList&, size_t&) {return parseFlag(printHelp)}},
-		{"-h", [](const StringList&, size_t&) {return parseFlag(printHelp)}},
+		{"--help", [](const StringList&, size_t&) { return parseFlag(printHelp); }},
+		{"-h", [](const StringList&, size_t&) { return parseFlag(printHelp); }},
 	};
 
 	// evaluating args and finding right flag parser

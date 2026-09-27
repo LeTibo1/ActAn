@@ -1,4 +1,5 @@
 #include "read_flags.h"
+#include <iostream>
 
 
 ParseAction parseFlag(const std::function<ParseAction()>& targetFunction) {
