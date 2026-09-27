@@ -1,8 +1,4 @@
 #pragma once
-#include <string>
-#include <vector>
-#include <filesystem>
+#include "types.h"
 
-using FileList = std::vector<std::string>;
-
-FileList findCsvFiles(const std::string& start_path);
+StringList findCsvFiles(const std::string& start_path);

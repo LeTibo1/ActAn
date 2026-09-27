@@ -3,4 +3,5 @@
 enum class ParseAction {
 	Continue,
 	Return,
+	Error,
 };
