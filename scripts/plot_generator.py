@@ -42,10 +42,7 @@ def generate_plot(file, data, data_area):
 
     return res.slope
 
-def run_plot_generation(file, data, data_area):
-    EPSILON = 6220 * 10**(-6)
-    VOL_CUVETTE = 1.2
-
+def run_plot_generation(file, data, data_area, EPSILON, VOL_CUVETTE):
     slope = generate_plot(file, data, data_area)
     v = round(np.abs(slope / EPSILON * VOL_CUVETTE), 4)
 

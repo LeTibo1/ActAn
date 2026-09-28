@@ -2,4 +2,4 @@
 #include "types.h"
 #include "actions.h"
 
-ParseAction dispatch(const StringList& args);
+void dispatch(const StringList& args);

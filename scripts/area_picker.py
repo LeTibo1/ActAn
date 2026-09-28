@@ -1,9 +1,8 @@
 import numpy as np
 from scipy import stats
 
-def search_algo(data, area_no):
+def search_algo(data, AREA_NO, THRESH):
     start = None
-    thresh = 0.05
     counter = 1
     i = 0
     is_reset = False
@@ -21,14 +20,14 @@ def search_algo(data, area_no):
             ### might want to change to polynomial regression
             res = stats.linregress(x[i:j], y[i:j])
             dif = np.abs(y[j+1] - (res.intercept + res.slope * x[j+1]))
-            if dif > thresh:
+            if dif > THRESH:
                 is_reset = True
                 continue
 
         # if not, then find the next large increase in abs
         elif not found:
             dif = y[j+1] - y[j]
-            if dif > thresh:
+            if dif > THRESH:
                 found = True
 
         # find the highest point which will be the new starting point
@@ -40,22 +39,16 @@ def search_algo(data, area_no):
                 counter += 1
                 i = j
 
-                if counter == area_no:
+                if counter == AREA_NO:
                     start = j
                     break
 
-    print("start found at:", start)
     return start
 
-def run_area_pick(dts, data):
-    # temporary manual setting of parameters
-    TFRAME_PRE = 60 #s
-    TFRAME_RUN = 60 #s
-    AREA_NO = 3 #1,2,3
-
+def run_area_pick(dts, data, AREA_NO, TFRAME_RUN, THRESH):
     no_scans = int(TFRAME_RUN / dts)
 
-    i = search_algo(data, AREA_NO)
+    i = search_algo(data, AREA_NO, THRESH)
     if not i:
         raise Exception("Failed to find the starting point of the time frame")
     j = i + no_scans

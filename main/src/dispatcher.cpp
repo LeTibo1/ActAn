@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <functional>
 
-ParseAction dispatch(const StringList& args) {
+void dispatch(const StringList& args) {
 	// map of all available flags
 	std::unordered_map<std::string, std::function<ParseAction(const StringList&, size_t&)>> actions = {
 		{"--help", [](const StringList&, size_t&) { return parseFlag(printHelp); }},
@@ -21,17 +21,15 @@ ParseAction dispatch(const StringList& args) {
 			auto action = it->second(args, i);
 
 			if (action == ParseAction::Return) {
-				return ParseAction::Return;
+				std::exit(0);
 			} else if (action == ParseAction::Error) {
-				return ParseAction::Error;
+				std::exit(1);
 			} else if (action == ParseAction::Continue) {
 				continue;
 			}
 		} else {
 			std::cout << "Unknown command: " << arg << "\n";
-			return ParseAction::Error;
+			std::exit(1);
 		}
 	}
-	
-	return ParseAction::Continue;
 }

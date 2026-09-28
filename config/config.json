@@ -1,0 +1,7 @@
+{
+	"area_no": 3,
+	"tframe_run": 60,
+	"thresh": 0.05,
+	"epsilon": 0.00622,
+	"vol_cuvette": 1.2
+}
