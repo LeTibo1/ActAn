@@ -1,20 +1,34 @@
 #!/bin/bash
-set -e
 
-cur_dir=$PWD
-cd "$(dirname "$0")"
+echo "Starting installation for ActAn..."
 
-mkdir -p build
-cd build
+# 1. compile project
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
 
-cmake ..
-cmake --build .
+if [ $? -ne 0 ]; then
+    echo "Error: Compilation failed. Make sure CMake and a C++ compiler are installed."
+    exit 1
+fi
 
-# NEU: Kopiert das fertige Programm in das Systemverzeichnis.
-# Da /usr/local/bin geschützt ist, wird nach deinem Mac-Passwort gefragt.
-#sudo cmake --install .
+# 2. find script path
+PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-cd "$cur_dir"
-#echo "Installation successful!"
+# 3. create alias depending on operating system
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    PROFILE_FILE="$HOME/.zshrc"
+else
+    # Linux
+    PROFILE_FILE="$HOME/.bashrc"
+fi
 
-/Users/thibautgoritz/Documents/Wichtig/Uni/Master_Forschis/Toullec/coding/ActAn/build/actan $@
+# check if alias exists, when not add it
+if ! grep -q "alias actan=" "$PROFILE_FILE"; then
+    echo "alias actan='$PROJECT_DIR/actan.sh'" >> "$PROFILE_FILE"
+    echo "Installation successful! Please restart your terminal or run: source $PROFILE_FILE"
+    echo "You will then be able to use the 'actan' command from anywhere."
+else
+    echo "ActAn alias is already configured in $PROFILE_FILE."
+fi
+

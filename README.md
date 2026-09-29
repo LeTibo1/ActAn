@@ -9,7 +9,7 @@ Choose one of the options below to get the project files onto your computer.
 ### Step 1: Download the Project
 
 #### Option A: Using the Terminal (Recommended)
-If you have Git installed, open your terminal and run the following commands:
+Navigate to the directory where you want to keep the project permanently (for example, your programs or development folder), then run:
 ```bash
 git clone https://github.com/LeTibo1/ActAn
 cd ActAn
@@ -17,60 +17,32 @@ cd ActAn
 
 #### Option B: As a ZIP File (Without Git)
 1. Click the green **"Code"** button at the top right of this GitHub page and select **"Download ZIP"**.
-2. Extract the downloaded ZIP file on your computer.
-3. Open your terminal and navigate into the extracted directory, for example:
+2. Extract the downloaded ZIP file.
+3. **Important:** Move the extracted folder to a permanent location where you can find it again (for example, your programs folder or a dedicated applications directory). Do not leave it in your Downloads folder.
+4. Open your terminal or PowerShell, and navigate into that final directory:
 ```bash
-cd ~/Downloads/ActAn-main
+cd /path/to/your/permanent/location/ActAn-main
 ```
 
 ---
 
-### Step 2: Compile the Program
+### Step 2: Run the Automated Installation Script
 
-Ensure you have `cmake` and a C++ compiler installed on your system (if not ask an ai ;)). Run these commands to build the application:
+Run the automated script matching your operating system. The script will automatically check for required tools (CMake, C++, and Python), install Python if it is missing, compile the project, and create a global terminal shortcut.
 
+#### For Linux and macOS:
+Run the following command in your terminal:
 ```bash
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build
+chmod +x run.sh && ./run.sh
 ```
 
----
-
-### Step 3: Configure the Terminal Command
-
-To run the tool from anywhere on your computer using the simple `actan` command, add a shortcut (alias) to your system profile.
-
-#### For Linux:
-```bash
-echo "alias actan='\$(pwd)/actan.sh'" >> ~/.bashrc
-source ~/.bashrc
-```
-
-#### For macOS:
-```bash
-echo "alias actan='\$(pwd)/actan.sh'" >> ~/.zshrc
-source ~/.zshrc
-```
-
-#### For Windows (PowerShell):
-Open your PowerShell and run the following commands to create a permanent alias:
-
+#### For Windows:
+Open PowerShell and run the following command:
 ```powershell
-# 1. Create a PowerShell profile if it does not exist yet
-if (!(Test-Path PROFILE)) New-Item -Type File -Path PROFILE -Force }
-
-# 2. Add the actan shortcut to your profile
-Add-Content \$PROFILE "function actan { & '\$((Get-Item .).FullName)\build\Debug\actan.exe' \$args }"
+Set-ExecutionPolicy Bypass -Scope Process -Force; .\run.ps1
 ```
 
-*Note for Windows:* Close and reopen your PowerShell window after running these commands to apply the changes. You can then run the tool from any folder by typing:
-```cmd
+**Setup complete.** Restart your terminal or PowerShell window. You can now run your program from any directory by typing:
+```text
 actan
 ```
-
-
-**Setup complete.** You can now open a new terminal window and run your program from any directory by typing:
-```bash
-actan
-```
-
