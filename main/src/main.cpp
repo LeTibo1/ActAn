@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
 
 	// collect files and manipulate them
 	auto csvFiles = findCsvFiles(current_path);
-	handleFiles(main, config, csvFiles);
+	handleFiles(current_path, main, config, csvFiles);
 
 	return 0;
 }

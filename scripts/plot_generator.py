@@ -46,5 +46,6 @@ def generate_plot(file, data, data_area):
 def run_plot_generation(file, data, data_area, EPSILON, VOL_CUVETTE):
     slope = generate_plot(file, data, data_area)
     v = round(np.abs(slope / EPSILON * VOL_CUVETTE), 4)
+    slope = round(slope, 4)
 
-    return v
+    return v, slope
