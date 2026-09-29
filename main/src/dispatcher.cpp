@@ -1,16 +1,31 @@
 #include "dispatcher.h"
+#include "flag_functions.h"
 #include "help.h"
 #include "read_flags.h"
 #include <iostream>
 #include <unordered_map>
 #include <functional>
 
-void dispatch(const StringList& args) {
+void dispatch(const StringList& args, ProgramConfig& config) {
 	// map of all available flags
 	std::unordered_map<std::string, std::function<ParseAction(const StringList&, size_t&)>> actions = {
 		{"--help", [](const StringList&, size_t&) { return parseFlag(printHelp); }},
 		{"-h", [](const StringList&, size_t&) { return parseFlag(printHelp); }},
 	};
+
+	StringList configList = {
+		"area_no", "tframe_run", "thresh", "epsilon", "vol_cuvette"
+	};
+
+	for (const auto& item : configList) {
+		actions["--" + item] = [item, &config](const StringList& a, size_t& i) {
+			auto targetFunc = [item, &config](const std::string& valueStr) -> ParseAction {
+				setConfigValue(item, valueStr, config);
+				return ParseAction::Continue;
+			};
+			return parseSingleInput(a, i, targetFunc);
+		};
+	}
 
 	// evaluating args and finding right flag parser
 	for (size_t i = 0; i < args.size(); i++) {

@@ -19,11 +19,11 @@ ProgramConfig loadConfigFile(const std::string& file_path) {
 	try {
 		json data = json::parse(file);
 
-		StringList requiredFields = {
-			"area_no", "tframe_run", "thresh", "epsilon", "vol_cuvette",
+		StringList configList = {
+			"area_no", "tframe_run", "thresh", "epsilon", "vol_cuvette"
 		};
 
-		for (const auto& field : requiredFields) {
+		for (const auto& field : configList) {
 			if (!data.contains(field)) {
 				std::cerr << "Warning! One parameter is missing in the config file.\n"
 						  << "If you have modified the file, please make sure that "
@@ -38,6 +38,7 @@ ProgramConfig loadConfigFile(const std::string& file_path) {
 		config.thresh    	= data["thresh"];
 		config.epsilon   	= data["epsilon"];
 		config.vol_cuvette  = data["vol_cuvette"];
+
 	} catch (const json::parse_error& e) {
 		std::cerr << e.what() << "\n"
 				  << "Please contact the designer of this program\n";

@@ -36,8 +36,9 @@ def generate_plot(file, data, data_area):
     # save plot in plots
     path_to_plots = os.path.dirname(file) + "/plots"
     filename = os.path.basename(file)
+    filename = os.path.splitext(filename)[0]
     os.makedirs(path_to_plots, exist_ok=True)
-    plt.title(os.path.splitext(filename)[0], fontsize=20)
+    plt.title(filename, fontsize=20)
     plt.savefig(f"{path_to_plots}/{filename}.png")
 
     return res.slope

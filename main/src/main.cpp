@@ -20,7 +20,7 @@ int main(int argc, char* argv[]) {
 	for (auto i = 1; i < argc; i++) {
 		args.push_back(argv[i]);
 	}
-	dispatch(args);
+	dispatch(args, config);
 
 	// collect files and manipulate them
 	auto csvFiles = findCsvFiles(current_path);
