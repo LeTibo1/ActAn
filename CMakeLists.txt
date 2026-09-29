@@ -4,13 +4,15 @@ project(ActAn VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# header files
-include_directories(main/include)
+include(GNUInstallDirs)
 
-# .cpp files
 file(GLOB SOURCES "main/src/*.cpp")
 
-# create executable
 add_executable(actan ${SOURCES})
 
-install(TARGETS actan DESTINATION /usr/local/bin)
+target_include_directories(actan PRIVATE main/include)
+
+# --- Installation ---
+install(TARGETS actan 
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
