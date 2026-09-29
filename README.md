@@ -1,6 +1,6 @@
 # ActAn
 
-Makes life easier for you. It takes your .csv files and extract the values to obtain the desired graphs and velocities.
+Makes life easier for you. It takes the .csv files of your activity measurements and extract the values to obtain the desired graphs and velocities.
 
 ## Installation and Setup
 
