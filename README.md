@@ -29,6 +29,7 @@ cd /path/to/your/permanent/location/ActAn-main
 ### Step 2: Run the Automated Installation Script
 
 Run the automated script matching your operating system. The script will automatically check for required tools (CMake, C++, and Python), install Python if it is missing, compile the project, and create a global terminal shortcut.
+If you run into an error, just copy and paste it to an ai of your choice and it will give you the workaround.
 
 #### For Linux and macOS:
 Run the following command in your terminal:
@@ -45,4 +46,9 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; .\run.ps1
 **Setup complete.** Restart your terminal or PowerShell window. You can now run your program from any directory by typing:
 ```text
 actan
+```
+
+If you need help with the program just enter:
+```text
+actan --help
 ```

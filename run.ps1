@@ -1,6 +1,6 @@
 Write-Host "Starting installation for ActAn on Windows..."
 
-# 1. compile project
+# compile project
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 
@@ -9,12 +9,18 @@ if (\$LASTEXITCODE -ne 0) {
     Exit
 }
 
-# 2. create PowerShell Profile if it does not exist yet
+# install python dependencies
+Write-Host "Installing Python dependencies from requirements.txt..." -ForegroundColor Yellow
+python -m pip install --upgrade pip --quiet
+python -m pip install -r requirements.txt --quiet
+
+
+# create PowerShell Profile if it does not exist yet
 if (!(Test-Path \$PROFILE)) { 
     New-Item -Type File -Path \$PROFILE -Force | Out-Null
 }
 
-# 3. Get current path to actan.exe
+# Get current path to actan.exe
 \$ExePath = Get-ChildItem -Path ".\build" -Filter "actan.exe" -Recurse | Select-Object -First 1 -ExpandProperty FullName
 
 if (!\$ExePath) {
@@ -22,7 +28,7 @@ if (!\$ExePath) {
     Exit
 }
 
-# 4. check if function is already in profile, if not -> add it
+# check if function is already in profile, if not -> add it
 \(ProfileContent = Get-Content\)PROFILE -ErrorAction SilentlyContinue
 if (\$ProfileContent -notcontains "function actan") {
     \$FunctionString = "`nfunction actan { & '$ExePath' `\$args }"
