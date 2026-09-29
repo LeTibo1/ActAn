@@ -11,7 +11,7 @@ Choose one of the options below to get the project files onto your computer.
 #### Option A: Using the Terminal (Recommended)
 If you have Git installed, open your terminal and run the following commands:
 ```bash
-git clone https://github.com
+git clone https://github.com/LeTibo1/ActAn
 cd ActAn
 ```
 
