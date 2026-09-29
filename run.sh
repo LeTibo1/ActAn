@@ -25,7 +25,7 @@ fi
 
 # check if alias exists, when not add it
 if ! grep -q "alias actan=" "$PROFILE_FILE"; then
-    echo "alias actan='$PROJECT_DIR/actan.sh'" >> "$PROFILE_FILE"
+    echo "alias actan='$PROJECT_DIR/build/actan'" >> "$PROFILE_FILE"
     echo "Installation successful! Please restart your terminal or run: source $PROFILE_FILE"
     echo "You will then be able to use the 'actan' command from anywhere."
 else
