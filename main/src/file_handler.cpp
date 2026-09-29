@@ -91,5 +91,6 @@ void handleFiles(std::string& currentPathStr, std::string& main, ProgramConfig& 
 	}
 
 	std::cout << "All analysis have been done. You can find your "
-			  << "results in 'activity_log.txt\n";
+			  << "results in 'activity_log.txt' and the generated "
+			  << "plots in the plots/ folder.\n";
 }
