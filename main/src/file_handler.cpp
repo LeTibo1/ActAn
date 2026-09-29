@@ -15,7 +15,7 @@ void handleFiles(std::string& currentPathStr, std::string& main, ProgramConfig& 
 		std::exit(0);
 	}
 
-	auto logFilePath = currentPathStr + "/activity_log.txt";
+	auto logFilePath = currentPath / "activity_log.txt";
 	std::ofstream logFile(logFilePath);
 	if (!logFile.is_open()) {
 		std::cerr << "Could not open \n'"
@@ -41,12 +41,17 @@ void handleFiles(std::string& currentPathStr, std::string& main, ProgramConfig& 
 		fs::path filePath(file);
 		auto relFile = fs::relative(filePath, currentPath).string();
 
-		auto command = "python3 " + main + " --file \"" + file + "\"" + flags;
+		#ifdef _WIN32
+			std::string pythonCmd = "python";
+		#else
+			std::string pythonCmd = "python3";
+		#endif
+		auto command = pythonCmd + " \"" + main + "\" --file \"" + file + "\" " + flags;
 		std::cout << "Starting analysis for file '"
 				  << relFile << "' ...\n";
 		std::system(command.c_str());
 
-		auto jsonFilePath = currentPathStr + "/temp_result.json";
+		auto jsonFilePath = currentPath / "temp_result.json";
 		std::ifstream jsonFile(jsonFilePath);
 
 		if (jsonFile.is_open()) {

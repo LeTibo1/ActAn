@@ -7,13 +7,18 @@
 namespace fs = std::filesystem;
 
 int main(int argc, char* argv[]) {
-	auto project_path = fs::absolute(argv[0]).parent_path().parent_path();
-	auto main = project_path.string() + "/scripts/main.py";
-	auto config_file = project_path.string() + "/config/config.json";
+	auto exe_path = fs::absolute(argv[0]);
+	auto project_path = exe_path.parent_path().parent_path();
+
+	auto main_path = project_path / "scripts" / "main.py";
+	auto config_file_path = project_path / "config" / "config.json";
 	auto current_path = fs::current_path().string();
 
+	auto main_str = main_path.string();
+	auto config_file_str = config_file_path.string();
+
 	// load config.json file
-	auto config = loadConfigFile(config_file);
+	auto config = loadConfigFile(config_file_str);
 
 	// Run dispatcher
 	StringList args;
@@ -24,7 +29,7 @@ int main(int argc, char* argv[]) {
 
 	// collect files and manipulate them
 	auto csvFiles = findCsvFiles(current_path);
-	handleFiles(current_path, main, config, csvFiles);
+	handleFiles(current_path, main_str, config, csvFiles);
 
 	return 0;
 }

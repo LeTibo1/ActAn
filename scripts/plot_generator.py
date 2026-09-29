@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
@@ -34,12 +34,14 @@ def generate_plot(file, data, data_area):
     )
 
     # save plot in plots
-    path_to_plots = os.path.dirname(file) + "/plots"
-    filename = os.path.basename(file)
-    filename = os.path.splitext(filename)[0]
-    os.makedirs(path_to_plots, exist_ok=True)
+    file_path = Path(file)
+    path_to_plots = file_path.parent / "plots"
+
+    filename = file_path.stem
+    path_to_plots.mkdir(parents=True, exist_ok=True)
+
     plt.title(filename, fontsize=20)
-    plt.savefig(f"{path_to_plots}/{filename}.png")
+    plt.savefig(path_to_plots / f"{filename}.png")
 
     return res.slope
 
