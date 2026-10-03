@@ -45,10 +45,15 @@ def search_algo(data, AREA_NO, THRESH):
 
     return start
 
-def run_area_pick(dts, data, AREA_NO, TFRAME_RUN, THRESH):
+def run_area_pick(dts, data, AREA_NO, TFRAME_RUN, THRESH, IS_DOSAGE):
     no_scans = int(TFRAME_RUN / dts)
 
-    i = search_algo(data, AREA_NO, THRESH)
+    if IS_DOSAGE == 0:
+        i = search_algo_measure(data, AREA_NO, THRESH)
+    elif IS_DOSAGE  == 1:
+        i = 2
+        no_scans = int(no_scans / 2)
+
     if not i:
         raise Exception("Failed to find the starting point of the time frame")
     j = i + no_scans

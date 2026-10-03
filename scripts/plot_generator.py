@@ -45,9 +45,13 @@ def generate_plot(file, data, data_area):
 
     return res.slope
 
-def run_plot_generation(file, data, data_area, EPSILON, VOL_CUVETTE):
+def run_plot_generation(file, data, data_area, EPSILON, VOL_CUVETTE, IS_DOSAGE):
     slope = generate_plot(file, data, data_area)
-    v = round(np.abs(slope / EPSILON * VOL_CUVETTE), 4)
     slope = round(slope, 4)
+
+    if IS_DOSAGE == 0:
+        v = round(np.abs(slope / EPSILON * VOL_CUVETTE), 4)
+    elif IS_DOSAGE == 1:
+        v = round(np.abs(slope / EPSILON), 4)
 
     return v, slope

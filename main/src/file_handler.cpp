@@ -3,6 +3,7 @@
 #include <fstream>
 #include <filesystem>
 #include <cstdlib>
+#include <sys/wait.h>
 #include <nlohmann/json.hpp>
 
 namespace fs = std::filesystem;
@@ -40,7 +41,7 @@ void handleFiles(
 	flags += " --thresh " + std::to_string(p_config.thresh);
 	flags += " --epsilon " + std::to_string(p_config.epsilon);
 	flags += " --vol_cuvette " + std::to_string(p_config.vol_cuvette);
-	flags += " --dosage " + std::to_string(f_config.dosage);
+	flags += " --is_dosage " + std::to_string(f_config.dosage);
 
 	for (auto& file : csvFiles) {
 		fs::path filePath(file);
@@ -54,7 +55,13 @@ void handleFiles(
 		auto command = pythonCmd + " \"" + main + "\" --file \"" + file + "\" " + flags;
 		std::cout << "Starting analysis for file '"
 				  << relFile << "' ...\n";
-		std::system(command.c_str());
+
+		int status = std::system(command.c_str());
+		int code = WEXITSTATUS(status);
+		if (code != 0) {
+			std::cerr << relFile << " could not be analyzed. Continue with next file\n-\n";
+			continue;
+		}
 
 		auto jsonFilePath = currentPath / "temp_result.json";
 		std::ifstream jsonFile(jsonFilePath);
@@ -71,7 +78,15 @@ void handleFiles(
 				if (logFile.is_open()) {
 					logFile << "file:        " << relFile << "\n";
 					logFile << "slope:       " << slope << "\n";
-					logFile << "v:           " << v << "\n";
+					if (f_config.dosage) {
+						std::string result;
+						if (v >= 54 && v <= 64) result = "Right!";
+						if (v < 54) result = "Too low --> more GR";
+						if (v > 64) result = "Too high --> more H2O:EtOH";
+						logFile << "v:           " << v << " --> " << result << "\n";
+					} else {
+						logFile << "v:           " << v << "\n";
+					}
 					logFile << "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
 					logFile.close();
 				} else {

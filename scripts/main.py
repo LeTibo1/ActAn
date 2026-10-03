@@ -18,11 +18,11 @@ def main():
 
     # 2. pick area
     if data:
-        data_area = ap.run_area_pick(dts, data, args.area_no, args.tframe_run, args.thresh)
+        data_area = ap.run_area_pick(dts, data, args.area_no, args.tframe_run, args.thresh, args.is_dosage)
 
     # 3. Plot both plots and calculate velocity
     if data_area:
-        v, slope = pg.run_plot_generation(file, data, data_area, args.epsilon, args.vol_cuvette)
+        v, slope = pg.run_plot_generation(file, data, data_area, args.epsilon, args.vol_cuvette, args.is_dosage)
         results["v"] = v
         results["slope"] = slope
 
