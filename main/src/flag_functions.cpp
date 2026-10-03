@@ -32,3 +32,7 @@ void setConfigValue(const std::string& key, const std::string& valueAsString, Pr
 
 	std::cerr << "Warning: key '" << key << "' does not exist in the config\n";
 }
+
+void setDosageMeasure(FlagConfig& config) {
+	config.dosage = true;
+}

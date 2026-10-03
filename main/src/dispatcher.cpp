@@ -6,11 +6,19 @@
 #include <unordered_map>
 #include <functional>
 
-void dispatch(const StringList& args, ProgramConfig& config) {
+void dispatch(const StringList& args, ProgramConfig& p_config, FlagConfig& f_config) {
 	// map of all available flags
 	std::unordered_map<std::string, std::function<ParseAction(const StringList&, size_t&)>> actions = {
 		{"--help", [](const StringList&, size_t&) { return parseFlag(printHelp); }},
 		{"-h", [](const StringList&, size_t&) { return parseFlag(printHelp); }},
+	};
+
+	actions["--dosage"] = [&f_config](const StringList&, size_t&) {
+		auto targetFunc = [&f_config]() -> ParseAction {
+			setDosageMeasure(f_config);
+			return ParseAction::Continue;
+		};
+		return parseFlag(targetFunc);
 	};
 
 	StringList configList = {
@@ -18,9 +26,9 @@ void dispatch(const StringList& args, ProgramConfig& config) {
 	};
 
 	for (const auto& item : configList) {
-		actions["--" + item] = [item, &config](const StringList& a, size_t& i) {
-			auto targetFunc = [item, &config](const std::string& valueStr) -> ParseAction {
-				setConfigValue(item, valueStr, config);
+		actions["--" + item] = [item, &p_config](const StringList& a, size_t& i) {
+			auto targetFunc = [item, &p_config](const std::string& valueStr) -> ParseAction {
+				setConfigValue(item, valueStr, p_config);
 				return ParseAction::Continue;
 			};
 			return parseSingleInput(a, i, targetFunc);

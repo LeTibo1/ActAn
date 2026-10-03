@@ -1,4 +1,8 @@
 #pragma once
 #include "types.h"
 
-void setConfigValue(const std::string& key, const std::string& valueAsString, ProgramConfig& config);
+void setConfigValue(
+		const std::string& key, const std::string& valueAsString,
+		ProgramConfig& p_config
+);
+void setDosageMeasure(FlagConfig& config);

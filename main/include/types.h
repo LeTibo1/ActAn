@@ -11,3 +11,7 @@ struct ProgramConfig {
 	double epsilon;
 	double vol_cuvette;
 };
+
+struct FlagConfig {
+	bool dosage = false;
+};

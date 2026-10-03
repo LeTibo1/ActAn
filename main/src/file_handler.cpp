@@ -7,7 +7,11 @@
 
 namespace fs = std::filesystem;
 
-void handleFiles(std::string& currentPathStr, std::string& main, ProgramConfig& config, StringList& csvFiles) {
+void handleFiles(
+		std::string& currentPathStr, std::string& main,
+		ProgramConfig& p_config, FlagConfig& f_config,
+		StringList& csvFiles
+) {
 	fs::path currentPath(currentPathStr);
 
 	if (csvFiles.size() == 0) {
@@ -31,11 +35,12 @@ void handleFiles(std::string& currentPathStr, std::string& main, ProgramConfig& 
 
 	// flags for python scripts
 	std::string flags;
-	flags = " --area_no " + std::to_string(config.area_no);
-	flags += " --tframe_run " + std::to_string(config.tframe_run);
-	flags += " --thresh " + std::to_string(config.thresh);
-	flags += " --epsilon " + std::to_string(config.epsilon);
-	flags += " --vol_cuvette " + std::to_string(config.vol_cuvette);
+	flags = " --area_no " + std::to_string(p_config.area_no);
+	flags += " --tframe_run " + std::to_string(p_config.tframe_run);
+	flags += " --thresh " + std::to_string(p_config.thresh);
+	flags += " --epsilon " + std::to_string(p_config.epsilon);
+	flags += " --vol_cuvette " + std::to_string(p_config.vol_cuvette);
+	flags += " --dosage " + std::to_string(f_config.dosage);
 
 	for (auto& file : csvFiles) {
 		fs::path filePath(file);
