@@ -1,26 +1,15 @@
 #include "file_handler.h"
 #include <iostream>
 #include <fstream>
-#include <filesystem>
 #include <cstdlib>
 #include <sys/wait.h>
-#include <nlohmann/json.hpp>
 
 namespace fs = std::filesystem;
 
-void handleFiles(
-		std::string& currentPathStr, std::string& main,
-		ProgramConfig& p_config, FlagConfig& f_config,
-		StringList& csvFiles
-) {
-	fs::path currentPath(currentPathStr);
-
-	if (csvFiles.size() == 0) {
-		std::cout << "No .csv file was found in this directory ...\n";
-		std::exit(0);
-	}
-
+fs::path createLogFile(fs::path& currentPath) {
+	// Path of logFile
 	auto logFilePath = currentPath / "activity_log.txt";
+
 	std::ofstream logFile(logFilePath);
 	if (!logFile.is_open()) {
 		std::cerr << "Could not open \n'"
@@ -34,8 +23,12 @@ void handleFiles(
 		logFile.close();
 	}
 
-	// flags for python scripts
+	return logFilePath;
+}
+
+std::string generatePythonFlags(ProgramConfig& p_config, FlagConfig& f_config) {
 	std::string flags;
+
 	flags = " --area_no " + std::to_string(p_config.area_no);
 	flags += " --tframe_run " + std::to_string(p_config.tframe_run);
 	flags += " --thresh " + std::to_string(p_config.thresh);
@@ -43,19 +36,99 @@ void handleFiles(
 	flags += " --vol_cuvette " + std::to_string(p_config.vol_cuvette);
 	flags += " --is_dosage " + std::to_string(f_config.dosage);
 
+	return flags;
+}
+
+std::string generatePythonCommand(std::string& main, std::string& file, std::string& flags) {
+	// windows or mac/linux
+	#ifdef _WIN32
+		std::string pythonCmd = "python";
+	#else
+		std::string pythonCmd = "python3";
+	#endif
+
+	auto command = pythonCmd + " \"" + main + "\" --file \"" + file + "\" " + flags;
+
+	return command;
+}
+
+nlohmann::json readJsonFile(fs::path& currentPath) {
+	auto jsonFilePath = currentPath / "temp_result.json";
+	std::ifstream jsonFile(jsonFilePath);
+
+	if (!jsonFile.is_open()) {
+		std::cerr << "Error: No temp_result.json file was generated\n";
+		std::exit(1);
+	}
+
+	nlohmann::json res;
+	try {
+		res = nlohmann::json::parse(jsonFile);
+		jsonFile.close();
+	} catch (const nlohmann::json::parse_error& e) {
+		std::cerr << "Error parsing the temp_result.json file\n"
+				  << e.what() << "\n";
+		std::exit(1);
+	}
+
+	std::remove(jsonFilePath.c_str());
+	return res;
+}
+
+void append2LogFile(fs::path& logFilePath, std::string& relFile, nlohmann::json& res, FlagConfig& f_config) {
+	auto slope = res["slope"];
+	auto v = res["v"];
+
+	std::ofstream logFile(logFilePath, std::ios::app);
+	if (logFile.is_open()) {
+		logFile << "file:        " << relFile << "\n";
+		logFile << "slope:       " << slope << "\n";
+		if (f_config.dosage) {
+			std::string result;
+			if (v >= 54 && v <= 64) result = "Right!";
+			if (v < 54) result = "Too low --> more GR";
+			if (v > 64) result = "Too high --> more H2O:EtOH";
+			logFile << "v:           " << v << " --> " << result << "\n";
+		} else {
+			logFile << "v:           " << v << "\n";
+		}
+		logFile << "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
+		logFile.close();
+	} else {
+		std::cerr << "Error: could not open log file\n";
+		std::exit(1);
+	}
+
+	std::cout << "Analysis successful!\n-\n";
+}
+
+void handleFiles(
+		std::string& currentPathStr, std::string& main,
+		ProgramConfig& p_config, FlagConfig& f_config,
+		StringList& csvFiles
+) {
+	fs::path currentPath(currentPathStr);
+
+	if (csvFiles.size() == 0) {
+		std::cout << "No .csv file was found in this directory ...\n";
+		std::exit(0);
+	}
+
+	// initiate logFile
+	auto logFilePath = createLogFile(currentPath);
+
+	// get python flags
+	auto flags = generatePythonFlags(p_config, f_config);
+
 	for (auto& file : csvFiles) {
 		fs::path filePath(file);
 		auto relFile = fs::relative(filePath, currentPath).string();
+		auto command = generatePythonCommand(main, file, flags);
 
-		#ifdef _WIN32
-			std::string pythonCmd = "python";
-		#else
-			std::string pythonCmd = "python3";
-		#endif
-		auto command = pythonCmd + " \"" + main + "\" --file \"" + file + "\" " + flags;
 		std::cout << "Starting analysis for file '"
 				  << relFile << "' ...\n";
 
+		// run python
 		int status = std::system(command.c_str());
 		int code = WEXITSTATUS(status);
 		if (code != 0) {
@@ -63,53 +136,11 @@ void handleFiles(
 			continue;
 		}
 
-		auto jsonFilePath = currentPath / "temp_result.json";
-		std::ifstream jsonFile(jsonFilePath);
-
-		if (jsonFile.is_open()) {
-			try {
-				auto res = nlohmann::json::parse(jsonFile);
-				jsonFile.close();
-
-				auto slope = res["slope"];
-				auto v = res["v"];
-
-				std::ofstream logFile(logFilePath, std::ios::app);
-				if (logFile.is_open()) {
-					logFile << "file:        " << relFile << "\n";
-					logFile << "slope:       " << slope << "\n";
-					if (f_config.dosage) {
-						std::string result;
-						if (v >= 54 && v <= 64) result = "Right!";
-						if (v < 54) result = "Too low --> more GR";
-						if (v > 64) result = "Too high --> more H2O:EtOH";
-						logFile << "v:           " << v << " --> " << result << "\n";
-					} else {
-						logFile << "v:           " << v << "\n";
-					}
-					logFile << "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
-					logFile.close();
-				} else {
-					std::cerr << "Error: could not open log file\n";
-					std::exit(1);
-				}
-
-				std::cout << "Analysis successful!\n-\n";
-
-			
-			} catch (const nlohmann::json::parse_error& e) {
-				std::cerr << "Error parsing the temp_result.json file\n"
-						  << e.what() << "\n";
-				std::exit(1);
-			}
-
-			std::remove(jsonFilePath.c_str());
-		} else {
-			std::cerr << "Error: No temp_result.json file was generated\n";
-			std::exit(1);
-		}
+		// append to logFile
+		auto res = readJsonFile(currentPath);
+		append2LogFile(logFilePath, relFile, res, f_config);
 	}
-
+		
 	std::cout << "All analysis have been done. You can find your "
 			  << "results in 'activity_log.txt' and the generated "
 			  << "plots in the plots/ folder.\n";
