@@ -5,15 +5,10 @@
 
 namespace fs = std::filesystem;
 
-fs::path createLogFile(fs::path& currentPath);
 std::string generatePythonFlags(ProgramConfig& p_config, FlagConfig& f_config);
 StringSet getSubDirectories(fs::path& currentPath, StringList& csvFiles);
 std::string generatePythonCommand(std::string& main, std::string& file, std::string& flags);
 nlohmann::json readJsonFile(fs::path& currentPath);
-void append2LogFile(
-		fs::path& logFilePath, std::string& relFile,
-		nlohmann::json& res, FlagConfig& f_config,
-		StringSet& dirs);
 
 void handleFiles(
 		std::string& currentPathStr, std::string& main,
