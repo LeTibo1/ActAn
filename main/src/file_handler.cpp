@@ -1,4 +1,5 @@
 #include "file_handler.h"
+#include "file_sorter.h"
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
@@ -39,6 +40,17 @@ std::string generatePythonFlags(ProgramConfig& p_config, FlagConfig& f_config) {
 	return flags;
 }
 
+StringSet getRelSubDirectories(fs::path& currentPath, StringList& csvFiles) {
+	// creates stringlist with final sub directories
+	StringSet dirs;
+	for (const auto& file : csvFiles) {
+		auto parent = fs::path(file).parent_path();
+		auto relParent = fs::relative(parent, currentPath).string();
+		dirs.insert(relParent);
+	}
+	return dirs;
+}
+
 std::string generatePythonCommand(std::string& main, std::string& file, std::string& flags) {
 	// windows or mac/linux
 	#ifdef _WIN32
@@ -75,14 +87,28 @@ nlohmann::json readJsonFile(fs::path& currentPath) {
 	return res;
 }
 
-void append2LogFile(fs::path& logFilePath, std::string& relFile, nlohmann::json& res, FlagConfig& f_config) {
+void append2LogFile(
+		fs::path& logFilePath, std::string& relFile,
+		nlohmann::json& res, FlagConfig& f_config,
+		StringSet& dirs
+		) {
 	auto slope = res["slope"];
 	auto v = res["v"];
 
 	std::ofstream logFile(logFilePath, std::ios::app);
 	if (logFile.is_open()) {
-		logFile << "file:        " << relFile << "\n";
-		logFile << "slope:       " << slope << "\n";
+		auto dir = fs::path(relFile).parent_path().string();
+		auto it = dirs.find(dir);
+		if (it != dirs.end()) {
+			logFile << dir << "\n";
+			logFile << "=-=-=-=-=\n";
+
+			dirs.erase(it);
+		}
+		auto file = fs::path(relFile).filename().string();
+
+		logFile << "file:        " << file << "\n";
+		//logFile << "slope:       " << slope << "\n";
 		if (f_config.dosage) {
 			std::string result;
 			if (v >= 54 && v <= 64) result = "Right!";
@@ -92,7 +118,7 @@ void append2LogFile(fs::path& logFilePath, std::string& relFile, nlohmann::json&
 		} else {
 			logFile << "v:           " << v << "\n";
 		}
-		logFile << "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
+		logFile << "\n----------------------\n";
 		logFile.close();
 	} else {
 		std::cerr << "Error: could not open log file\n";
@@ -114,11 +140,17 @@ void handleFiles(
 		std::exit(0);
 	}
 
+	// sort found files
+	sortFiles(csvFiles);
+
 	// initiate logFile
 	auto logFilePath = createLogFile(currentPath);
 
 	// get python flags
 	auto flags = generatePythonFlags(p_config, f_config);
+
+	// get sub directories
+	auto dirs = getRelSubDirectories(currentPath, csvFiles);
 
 	for (auto& file : csvFiles) {
 		fs::path filePath(file);
@@ -138,7 +170,7 @@ void handleFiles(
 
 		// append to logFile
 		auto res = readJsonFile(currentPath);
-		append2LogFile(logFilePath, relFile, res, f_config);
+		append2LogFile(logFilePath, relFile, res, f_config, dirs);
 	}
 		
 	std::cout << "All analysis have been done. You can find your "
