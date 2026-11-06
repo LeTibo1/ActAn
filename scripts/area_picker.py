@@ -22,12 +22,13 @@ def search_algo(data, AREA_NO, THRESH):
             dif = np.abs(y[j+1] - (res.intercept + res.slope * x[j+1]))
             if dif > THRESH:
                 is_reset = True
+                ref = y[j]
                 continue
 
         # if not, then find the next large increase in abs
         elif not found:
             dif = y[j+1] - y[j]
-            if dif > THRESH:
+            if dif > THRESH and y[j+1] > ref * 0.5:
                 found = True
 
         # find the highest point which will be the new starting point

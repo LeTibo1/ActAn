@@ -6,7 +6,7 @@
 namespace fs = std::filesystem;
 
 std::string generatePythonFlags(ProgramConfig& p_config, FlagConfig& f_config);
-StringSet getSubDirectories(fs::path& currentPath, StringList& csvFiles);
+StringSet getRelSubDirectories(fs::path& currentPath, StringList& csvFiles);
 std::string generatePythonCommand(std::string& main, std::string& file, std::string& flags);
 nlohmann::json readJsonFile(fs::path& currentPath);
 
