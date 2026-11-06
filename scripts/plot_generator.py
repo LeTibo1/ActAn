@@ -28,7 +28,7 @@ def generate_plot(file, data, data_area):
     plt.grid(color='gray',alpha=0.3,zorder=0)
     plt.legend(loc='best', fontsize=fsize)
     plt.text(
-        0.7*x[-1], 0,
+        0.7*x[-1], min(y)+0.12*(max(y)-min(y)),
         equation,
         fontsize=fsize,
     )
