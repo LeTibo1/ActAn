@@ -6,14 +6,13 @@
 
 namespace fs = std::filesystem;
 
-fs::path createLogFile(fs::path& currentPath);
-void writeBanner(std::ostream& out);
+std::ofstream createLogFile(const fs::path& currentPath);
 
 void append2LogFile(
-		fs::path& logFilePath,
+		std::ostream& out,
 		Measurement& entry,
 		FlagConfig& f_config,
 		StringSet& dirs);
 
-void appendMean2LogFile(fs::path& logFilePath, double& mean);
-void terminationMessage2LogFile(fs::path& logFilePath);
+void appendMean2LogFile(std::ostream& out, double& mean);
+void terminationMessage2LogFile(std::ostream& out);

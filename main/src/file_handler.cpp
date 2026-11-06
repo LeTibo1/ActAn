@@ -105,7 +105,7 @@ void handleFiles(
 	sortFiles(csvFiles);
 
 	// initiate logFile
-	auto logFilePath = createLogFile(currentPath);
+	auto logFile = createLogFile(currentPath);
 
 	// get python flags
 	auto flags = generatePythonFlags(p_config, f_config);
@@ -142,21 +142,21 @@ void handleFiles(
 	for (auto& entry : entries) {
 		if (!curName.empty() && entry.name != curName) {
 			if (!f_config.dosage) {
-				appendMean2LogFile(logFilePath, means[curName]);
+				appendMean2LogFile(logFile, means[curName]);
 			}
 		}
 
 		curName = entry.name;
 		// append to logFile
-		append2LogFile(logFilePath, entry, f_config, dirs);
+		append2LogFile(logFile, entry, f_config, dirs);
 	}
 	if (!curName.empty()) {
 		if (!f_config.dosage) {
-			appendMean2LogFile(logFilePath, means[curName]);
+			appendMean2LogFile(logFile, means[curName]);
 		}
 	}
 
-	terminationMessage2LogFile(logFilePath);
+	terminationMessage2LogFile(logFile);
 		
 	std::cout << "All analysis have been done. You can find your "
 			  << "results in 'activity_log.txt' and the generated "
