@@ -10,6 +10,7 @@ struct ProgramConfig {
 	int area_no;
 	int tframe_run;
 	double thresh;
+	double min_height;
 	double epsilon;
 	double vol_cuvette;
 };

@@ -1,7 +1,7 @@
 import numpy as np
 from scipy import stats
 
-def search_algo(data, AREA_NO, THRESH):
+def search_algo(data, AREA_NO, THRESH, MIN_HEIGHT):
     start = None
     counter = 1
     i = 0
@@ -28,7 +28,7 @@ def search_algo(data, AREA_NO, THRESH):
         # if not, then find the next large increase in abs
         elif not found:
             dif = y[j+1] - y[j]
-            if dif > THRESH and y[j+1] > ref * 0.5:
+            if dif > THRESH and y[j+1] > ref * MIN_HEIGHT:
                 found = True
 
         # find the highest point which will be the new starting point
@@ -46,11 +46,11 @@ def search_algo(data, AREA_NO, THRESH):
 
     return start
 
-def run_area_pick(dts, data, AREA_NO, TFRAME_RUN, THRESH, IS_DOSAGE):
+def run_area_pick(dts, data, AREA_NO, TFRAME_RUN, THRESH, MIN_HEIGHT, IS_DOSAGE):
     no_scans = int(TFRAME_RUN / dts)
 
     if IS_DOSAGE == 0:
-        i = search_algo(data, AREA_NO, THRESH)
+        i = search_algo(data, AREA_NO, THRESH, MIN_HEIGHT)
     elif IS_DOSAGE  == 1:
         i = 2
         no_scans = int(no_scans / 2)

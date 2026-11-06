@@ -6,7 +6,7 @@
 
 namespace fs = std::filesystem;
 
-std::ofstream createLogFile(const fs::path& currentPath);
+std::ofstream createLogFile(const fs::path& currentPath, FlagConfig& f_config);
 
 void append2LogFile(
 		std::ostream& out,

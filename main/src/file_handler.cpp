@@ -8,85 +8,98 @@
 
 namespace fs = std::filesystem;
 
-std::string baseName(const std::string& s) {
-    std::size_t end = s.find_last_not_of("0123456789");
-    return (end == std::string::npos) ? s : s.substr(0, end + 1);
+namespace {
+	std::string baseName(const std::string& s);
+	std::string removeExt(const std::string& s);
+	std::string generatePythonFlags(ProgramConfig& p_config, FlagConfig& f_config);
+	StringSet getRelSubDirectories(fs::path& currentPath, StringList& csvFiles);
+	std::string generatePythonCommand(std::string& main, std::string& file, std::string& flags);
+	nlohmann::json readJsonFile(fs::path& currentPath);
+	std::map<std::string, double> getMeanValues(std::map<std::string, std::vector<double>>& values_map);
 }
 
-std::string removeExt(const std::string& s) {
-	std::size_t pos = s.find_last_of('.');
-	return (pos == std::string::npos) ? s : s.substr(0, pos);
-}
-
-std::string generatePythonFlags(ProgramConfig& p_config, FlagConfig& f_config) {
-	std::string flags;
-
-	flags = " --area_no " + std::to_string(p_config.area_no);
-	flags += " --tframe_run " + std::to_string(p_config.tframe_run);
-	flags += " --thresh " + std::to_string(p_config.thresh);
-	flags += " --epsilon " + std::to_string(p_config.epsilon);
-	flags += " --vol_cuvette " + std::to_string(p_config.vol_cuvette);
-	flags += " --is_dosage " + std::to_string(f_config.dosage);
-
-	return flags;
-}
-
-StringSet getRelSubDirectories(fs::path& currentPath, StringList& csvFiles) {
-	// creates stringlist with final sub directories
-	StringSet dirs;
-	for (const auto& file : csvFiles) {
-		auto parent = fs::path(file).parent_path();
-		auto relParent = fs::relative(parent, currentPath).string();
-		dirs.insert(relParent);
-	}
-	return dirs;
-}
-
-std::string generatePythonCommand(std::string& main, std::string& file, std::string& flags) {
-	// windows or mac/linux
-	#ifdef _WIN32
-		std::string pythonCmd = "python";
-	#else
-		std::string pythonCmd = "python3";
-	#endif
-
-	auto command = pythonCmd + " \"" + main + "\" --file \"" + file + "\" " + flags;
-
-	return command;
-}
-
-nlohmann::json readJsonFile(fs::path& currentPath) {
-	auto jsonFilePath = currentPath / "temp_result.json";
-	std::ifstream jsonFile(jsonFilePath);
-
-	if (!jsonFile.is_open()) {
-		std::cerr << "Error: No temp_result.json file was generated\n";
-		std::exit(1);
+namespace {
+	std::string baseName(const std::string& s) {
+		std::size_t end = s.find_last_not_of("0123456789");
+		return (end == std::string::npos) ? s : s.substr(0, end + 1);
 	}
 
-	nlohmann::json res;
-	try {
-		res = nlohmann::json::parse(jsonFile);
-		jsonFile.close();
-	} catch (const nlohmann::json::parse_error& e) {
-		std::cerr << "Error parsing the temp_result.json file\n"
-				  << e.what() << "\n";
-		std::exit(1);
+	std::string removeExt(const std::string& s) {
+		std::size_t pos = s.find_last_of('.');
+		return (pos == std::string::npos) ? s : s.substr(0, pos);
 	}
 
-	std::remove(jsonFilePath.c_str());
-	return res;
-}
+	std::string generatePythonFlags(ProgramConfig& p_config, FlagConfig& f_config) {
+		std::string flags;
 
-std::map<std::string, double> getMeanValues(std::map<std::string, std::vector<double>>& values_map) {
-	std::map<std::string, double> means;
-	for (auto& [name, values] : values_map) {
-		double sum = 0.0;
-		for (auto& value : values) sum += value;
-		means[name] = sum / values.size();
+		flags = " --area_no " + std::to_string(p_config.area_no);
+		flags += " --tframe_run " + std::to_string(p_config.tframe_run);
+		flags += " --thresh " + std::to_string(p_config.thresh);
+		flags += " --min_height " + std::to_string(p_config.min_height);
+		flags += " --epsilon " + std::to_string(p_config.epsilon);
+		flags += " --vol_cuvette " + std::to_string(p_config.vol_cuvette);
+		flags += " --is_dosage " + std::to_string(f_config.dosage);
+
+		return flags;
 	}
 
-	return means;
+	StringSet getRelSubDirectories(fs::path& currentPath, StringList& csvFiles) {
+		// creates stringlist with final sub directories
+		StringSet dirs;
+		for (const auto& file : csvFiles) {
+			auto parent = fs::path(file).parent_path();
+			auto relParent = fs::relative(parent, currentPath).string();
+			dirs.insert(relParent);
+		}
+		return dirs;
+	}
+
+	std::string generatePythonCommand(std::string& main, std::string& file, std::string& flags) {
+		// windows or mac/linux
+		#ifdef _WIN32
+			std::string pythonCmd = "python";
+		#else
+			std::string pythonCmd = "python3";
+		#endif
+
+		auto command = pythonCmd + " \"" + main + "\" --file \"" + file + "\" " + flags;
+
+		return command;
+	}
+
+	nlohmann::json readJsonFile(fs::path& currentPath) {
+		auto jsonFilePath = currentPath / "temp_result.json";
+		std::ifstream jsonFile(jsonFilePath);
+
+		if (!jsonFile.is_open()) {
+			std::cerr << "Error: No temp_result.json file was generated\n";
+			std::exit(1);
+		}
+
+		nlohmann::json res;
+		try {
+			res = nlohmann::json::parse(jsonFile);
+			jsonFile.close();
+		} catch (const nlohmann::json::parse_error& e) {
+			std::cerr << "Error parsing the temp_result.json file\n"
+					  << e.what() << "\n";
+			std::exit(1);
+		}
+
+		std::remove(jsonFilePath.c_str());
+		return res;
+	}
+
+	std::map<std::string, double> getMeanValues(std::map<std::string, std::vector<double>>& values_map) {
+		std::map<std::string, double> means;
+		for (auto& [name, values] : values_map) {
+			double sum = 0.0;
+			for (auto& value : values) sum += value;
+			means[name] = sum / values.size();
+		}
+
+		return means;
+	}
 }
 
 void handleFiles(
@@ -105,7 +118,7 @@ void handleFiles(
 	sortFiles(csvFiles);
 
 	// initiate logFile
-	auto logFile = createLogFile(currentPath);
+	auto logFile = createLogFile(currentPath, f_config);
 
 	// get python flags
 	auto flags = generatePythonFlags(p_config, f_config);
@@ -113,6 +126,8 @@ void handleFiles(
 	// get sub directories
 	auto dirs = getRelSubDirectories(currentPath, csvFiles);
 
+	bool isError = false;
+	bool isAllFailed = true;
 	std::vector<Measurement> entries;
 	std::map<std::string, std::vector<double>> values;
 	for (auto& file : csvFiles) {
@@ -126,8 +141,10 @@ void handleFiles(
 		int code = WEXITSTATUS(status);
 		if (code != 0) {
 			std::cerr << relFile << " could not be analyzed. Continue with next file\n";
+			isError = true;
 			continue;
 		}
+		isAllFailed = false;
 
 		auto res = readJsonFile(currentPath);
 		auto v = res["v"].get<double>();
@@ -158,7 +175,18 @@ void handleFiles(
 
 	terminationMessage2LogFile(logFile);
 		
-	std::cout << "All analysis have been done. You can find your "
-			  << "results in 'activity_log.txt' and the generated "
-			  << "plots in the plots/ folder.\n";
+	if (!isError) {
+		std::cout << "All analysis have been done.\n";
+	} else {
+		std::cout << "-----------------------------------------------------\n";
+		std::cout << "At least one file has not been analyzed correctly!\n";
+	}
+
+	if (isAllFailed) {
+		std::cout << "If you want to analyze the dosage measurements, "
+				  << "make sure to use the right flag: 'actan --dosage'\n";
+	} else {
+		std::cout << "You can find your results in 'activity_log.txt' "
+				  << "and the generated plots in the plots/ folder.\n";
+	}
 }

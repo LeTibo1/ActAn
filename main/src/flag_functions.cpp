@@ -12,6 +12,7 @@ void setConfigValue(const std::string& key, const std::string& valueAsString, Pr
 	// double values
 	std::unordered_map<std::string, double*> doubleFields = {
 		{"thresh", &config.thresh},
+		{"min_height", &config.min_height},
 		{"epsilon", &config.epsilon},
 		{"vol_cuvette", &config.vol_cuvette},
 	};

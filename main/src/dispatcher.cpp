@@ -22,7 +22,7 @@ void dispatch(const StringList& args, ProgramConfig& p_config, FlagConfig& f_con
 	};
 
 	StringList configList = {
-		"area_no", "tframe_run", "thresh", "epsilon", "vol_cuvette"
+		"area_no", "tframe_run", "thresh", "min_height", "epsilon", "vol_cuvette"
 	};
 
 	for (const auto& item : configList) {

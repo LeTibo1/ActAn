@@ -18,7 +18,11 @@ def main():
 
     # 2. pick area
     if data:
-        data_area = ap.run_area_pick(dts, data, args.area_no, args.tframe_run, args.thresh, args.is_dosage)
+        data_area = ap.run_area_pick(
+                dts, data, args.area_no,
+                args.tframe_run, args.thresh,
+                args.min_height, args.is_dosage
+                )
 
     # 3. Plot both plots and calculate velocity
     if data_area:
@@ -34,5 +38,5 @@ if __name__ == "__main__":
         main()
     except Exception as e:
         print(f"Error found: {e}", file=sys.stderr)
-        traceback.print_exc()
+        #traceback.print_exc()
         sys.exit(1)

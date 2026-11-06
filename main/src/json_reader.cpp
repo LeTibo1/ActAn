@@ -20,7 +20,7 @@ ProgramConfig loadConfigFile(const std::string& file_path) {
 		json data = json::parse(file);
 
 		StringList configList = {
-			"area_no", "tframe_run", "thresh", "epsilon", "vol_cuvette"
+			"area_no", "tframe_run", "thresh", "min_height", "epsilon", "vol_cuvette"
 		};
 
 		for (const auto& field : configList) {
@@ -36,6 +36,7 @@ ProgramConfig loadConfigFile(const std::string& file_path) {
 		config.area_no 		= data["area_no"];
 		config.tframe_run	= data["tframe_run"];
 		config.thresh    	= data["thresh"];
+		config.min_height	= data["min_height"];
 		config.epsilon   	= data["epsilon"];
 		config.vol_cuvette  = data["vol_cuvette"];
 

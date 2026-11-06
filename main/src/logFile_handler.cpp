@@ -12,11 +12,11 @@ namespace {
 namespace {
 	void writeBanner(std::ostream& out) {
 		out << R"ART(
-					_        _      _
-				   / \   ___| |_   / \   _ __
-				  / _ \ / __| __| / _ \ | '_ \
-				 / ___ \ (__| |_ / ___ \| | | |
-				/_/   \_\___|\__/_/   \_\_| |_|
+				_        _      _
+			   / \   ___| |_   / \   _ __
+			  / _ \ / __| __| / _ \ | '_ \
+			 / ___ \ (__| |_ / ___ \| | | |
+			/_/   \_\___|\__/_/   \_\_| |_|
 	)ART";
 		out << "\n";
 	}
@@ -58,7 +58,7 @@ namespace {
 	}
 }
 
-std::ofstream createLogFile(const fs::path& currentPath) {
+std::ofstream createLogFile(const fs::path& currentPath, FlagConfig& f_config) {
 	// Path of logFile
 	auto logFilePath = currentPath / "activity_log.txt";
 
@@ -66,7 +66,11 @@ std::ofstream createLogFile(const fs::path& currentPath) {
 	if (logFile.is_open()) {
 		writeBanner(logFile);
 		logFile << "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
-		logFile << "=-=-=-=-=-=    Activity Measurements log    =-=-=-=-=-=\n";
+		if(f_config.dosage) {
+			logFile << "=-=-=-=-=-=     DOSAGE MEASUREMENTS LOG     =-=-=-=-=-=\n";
+		} else {
+			logFile << "=-=-=-=-=-=    ACTIVITY MEASUREMENTS LOG    =-=-=-=-=-=\n";
+		}
 		logFile << "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
 		logFile << "-------------------------------------------------------\n";
 		logFile << "          FILE          |     v      |    comments     \n";
@@ -74,7 +78,7 @@ std::ofstream createLogFile(const fs::path& currentPath) {
 	} else {
 		std::cerr << "Could not open \n'"
 				  << logFilePath
-				  << "'\n Please contact the designer of this program\n";
+				  << "'\n Please contact the developer of this program\n";
 		std::exit(1);
 	}
 
@@ -133,8 +137,7 @@ void terminationMessage2LogFile(std::ostream& out) {
 	out << "Disclaimer: The values are provided without warranty.\n"
 			<< "Please interpret the results with caution and verify\n"
 			<< "the generated plots to confirm that the correct region\n"
-			<< "was interpolated. If it was not, please contact the\n"
-			<< "developer of this program or perform the analysis\n"
-			<< "manually.\n";
+			<< "was fitted. If it was not, please contact the developer\n"
+			<< "of this program or perform the analysis manually.\n";
 	out << "-------------------------------------------------------\n";
 }

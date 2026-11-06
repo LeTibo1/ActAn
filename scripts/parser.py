@@ -6,6 +6,7 @@ def parse_args():
     parser.add_argument("--area_no", type=int)
     parser.add_argument("--tframe_run", type=int)
     parser.add_argument("--thresh", type=float)
+    parser.add_argument("--min_height", type=float)
     parser.add_argument("--epsilon", type=float)
     parser.add_argument("--vol_cuvette", type=float)
     parser.add_argument("--is_dosage", type=int)

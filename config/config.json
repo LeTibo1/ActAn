@@ -2,6 +2,7 @@
 	"area_no": 3,
 	"tframe_run": 60,
 	"thresh": 0.05,
+	"min_height": 0.7,
 	"epsilon": 0.00622,
 	"vol_cuvette": 1.2
 }
