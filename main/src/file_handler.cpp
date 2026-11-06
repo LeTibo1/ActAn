@@ -8,6 +8,16 @@
 
 namespace fs = std::filesystem;
 
+std::string baseName(const std::string& s) {
+    std::size_t end = s.find_last_not_of("0123456789");
+    return (end == std::string::npos) ? s : s.substr(0, end + 1);
+}
+
+std::string removeExt(const std::string& s) {
+	std::size_t pos = s.find_last_of('.');
+	return (pos == std::string::npos) ? s : s.substr(0, pos);
+}
+
 std::string generatePythonFlags(ProgramConfig& p_config, FlagConfig& f_config) {
 	std::string flags;
 
@@ -68,6 +78,17 @@ nlohmann::json readJsonFile(fs::path& currentPath) {
 	return res;
 }
 
+std::map<std::string, double> getMeanValues(std::map<std::string, std::vector<double>>& values_map) {
+	std::map<std::string, double> means;
+	for (auto& [name, values] : values_map) {
+		double sum = 0.0;
+		for (auto& value : values) sum += value;
+		means[name] = sum / values.size();
+	}
+
+	return means;
+}
+
 void handleFiles(
 		std::string& currentPathStr, std::string& main,
 		ProgramConfig& p_config, FlagConfig& f_config,
@@ -92,9 +113,12 @@ void handleFiles(
 	// get sub directories
 	auto dirs = getRelSubDirectories(currentPath, csvFiles);
 
+	std::vector<Measurement> entries;
+	std::map<std::string, std::vector<double>> values;
 	for (auto& file : csvFiles) {
 		fs::path filePath(file);
 		auto relFile = fs::relative(filePath, currentPath).string();
+		auto name = baseName(removeExt(relFile));
 		auto command = generatePythonCommand(main, file, flags);
 
 		// run python
@@ -105,10 +129,34 @@ void handleFiles(
 			continue;
 		}
 
-		// append to logFile
 		auto res = readJsonFile(currentPath);
-		append2LogFile(logFilePath, relFile, res, f_config, dirs);
+		auto v = res["v"].get<double>();
+		entries.push_back({relFile, name, v});
+		values[name].push_back(v);
 	}
+
+	// get mean value
+	auto means = getMeanValues(values);
+	
+	std::string curName;
+	for (auto& entry : entries) {
+		if (!curName.empty() && entry.name != curName) {
+			if (!f_config.dosage) {
+				appendMean2LogFile(logFilePath, means[curName]);
+			}
+		}
+
+		curName = entry.name;
+		// append to logFile
+		append2LogFile(logFilePath, entry, f_config, dirs);
+	}
+	if (!curName.empty()) {
+		if (!f_config.dosage) {
+			appendMean2LogFile(logFilePath, means[curName]);
+		}
+	}
+
+	terminationMessage2LogFile(logFilePath);
 		
 	std::cout << "All analysis have been done. You can find your "
 			  << "results in 'activity_log.txt' and the generated "

@@ -17,3 +17,8 @@ struct ProgramConfig {
 struct FlagConfig {
 	bool dosage = false;
 };
+
+struct Measurement {
+	std::string file, name;
+	double value;
+};
